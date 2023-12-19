@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('address');
             $table->string('image');
             $table->enum('user_is_active', ['yes', 'no']);
+            $table->string('token');
             $table->timestamps();
         });
     }
