@@ -5,14 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-
-class User extends Authenticatable
+class Admin extends Authenticatable
 {
     use HasFactory;
 
-    protected $primaryKey = 'user_id';
+    protected $primaryKey = 'admin_id';
 
-    protected $guarded = 'user_id';
+    protected $guarded = 'admin_id';
 
     public $incrementing = false;
 }
