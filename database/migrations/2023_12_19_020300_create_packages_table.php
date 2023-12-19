@@ -18,8 +18,10 @@ return new class extends Migration
             $table->string('temperature_package', 3);
             $table->string('windspeed_package', 3);
             $table->string('total_hour_package', 3);
-            $table->string('user_id');
+            $table->string('user_id')->nullable();
+            $table->string('admin_id')->nullable();
             $table->foreign('user_id')->on('users')->references('user_id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('admin_id')->on('admins')->references('admin_id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

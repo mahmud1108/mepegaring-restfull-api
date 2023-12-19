@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('admins', function (Blueprint $table) {
             $table->uuid('admin_id')->primary()->unique();
+            $table->string('name', 30);
             $table->string('email', 30)->unique();
             $table->string('password');
             $table->string('phone');
-            $table->string('token')->unique();
+            $table->string('token')->unique()->nullable();
             $table->timestamps();
         });
     }

@@ -25,7 +25,9 @@ class UserMiddleware
             $auth = false;
         }
 
-        $user = User::where('token', $token)->first();
+        $user = User::where('token', $token)
+            ->where('user_is_active', 'yes')
+            ->first();
         if (!$user) {
             $auth = false;
         } else {
