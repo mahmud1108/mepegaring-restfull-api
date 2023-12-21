@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\PackageController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Tests\Feature\LandingPageTest;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +21,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/admin/login', [AdminController::class, 'login']);
+Route::post('/forecast', [LandingPageController::class, 'post_forecast']);
+Route::get('/forecast', [LandingPageController::class, 'get_forecast']);
+Route::post('/temporary-schedule', [LandingPageController::class, 'temporary_schedule']);
+Route::delete('/temporary-schedule', [LandingPageController::class, 'delete_temporary_schedule']);
+
+Route::get('/package-admin', [LandingPageController::class, 'get_package_admin']);
+
 
 Route::middleware(AdminMiddleware::class)->prefix('admin')->group(function () {
     Route::get('/', [AdminController::class, 'index']);

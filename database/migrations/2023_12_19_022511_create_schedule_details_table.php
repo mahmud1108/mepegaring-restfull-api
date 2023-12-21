@@ -18,7 +18,8 @@ return new class extends Migration
             $table->time('schedule_detail_hour');
             $table->string('schedule_detail_temperature', 3);
             $table->string('schedule_detail_windspeed', 3);
-            $table->string('schedule_id');
+            $table->string('status', 3)->nullable();
+            $table->string('schedule_id', 20);
 
             $table->foreign('schedule_id')->on('schedules')->references('schedule_id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();

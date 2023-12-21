@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name_package', 20);
             $table->string('weather_package', 20);
             $table->string('temperature_package', 3);
+            $table->string('relative_humidity_package', 3);
+            $table->string('precipitation_package', 3);
             $table->string('windspeed_package', 3);
             $table->string('total_hour_package', 3);
             $table->string('user_id')->nullable();
