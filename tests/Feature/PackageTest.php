@@ -48,6 +48,8 @@ class PackageTest extends TestCase
             'name_package' => 'name',
             'weather_package' => ['2', '3', '4'],
             'temperature_package' => '12',
+            'relative_humidity_package' => '12',
+            'precipitation_package' => '12',
             'windspeed_package' => '12',
             'total_hour_package' => '12',
         ], [
@@ -60,6 +62,8 @@ class PackageTest extends TestCase
                     "temperature_package" => "12",
                     "windspeed_package" => "12",
                     "total_hour_package" => "12",
+                    'relative_humidity_package' => '12',
+                    'precipitation_package' => '12',
                     "admin_id" => "adm_1"
                 ]
             ]);
@@ -75,6 +79,8 @@ class PackageTest extends TestCase
             'temperature_package' => '12',
             'windspeed_package' => '12',
             'total_hour_package' => '12',
+            'relative_humidity_package' => '12',
+            'precipitation_package' => '12',
         ], [
             'Authorization' => 'admin'
         ])->assertStatus(400)
@@ -95,6 +101,8 @@ class PackageTest extends TestCase
             'name_package' => 'name',
             'weather_package' => ['2', '3', '4'],
             'temperature_package' => '12',
+            'relative_humidity_package' => '12',
+            'precipitation_package' => '12',
             'windspeed_package' => '12',
             'total_hour_package' => '12',
         ], [
@@ -106,6 +114,8 @@ class PackageTest extends TestCase
                     "weather_package" => "2,3,4",
                     "temperature_package" => "12",
                     "windspeed_package" => "12",
+                    'relative_humidity_package' => '12',
+                    'precipitation_package' => '12',
                     "total_hour_package" => "12",
                     "user_id" => "user_0"
                 ]

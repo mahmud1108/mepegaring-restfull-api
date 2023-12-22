@@ -30,6 +30,8 @@ class PackageStoreRequest extends FormRequest
             'temperature_package' => ['required', 'max:3'],
             'windspeed_package' => ['required', 'max:3'],
             'total_hour_package' => ['required'],
+            'relative_humidity_package' => ['required', 'max:3'],
+            'precipitation_package' => ['required', 'max:3'],
         ];
     }
 

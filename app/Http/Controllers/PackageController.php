@@ -78,6 +78,8 @@ class PackageController extends Controller
             $package->weather_package = implode(',', $data['weather_package']);
             $package->temperature_package = $data['temperature_package'];
             $package->windspeed_package = $data['windspeed_package'];
+            $package->relative_humidity_package = $data['relative_humidity_package'];
+            $package->precipitation_package = $data['precipitation_package'];
             $package->total_hour_package = $data['total_hour_package'];
             $package->user_id = null;
             $package->admin_id = auth()->user()->admin_id;
@@ -86,6 +88,8 @@ class PackageController extends Controller
             $package->weather_package = implode(',', $data['weather_package']);
             $package->temperature_package = $data['temperature_package'];
             $package->windspeed_package = $data['windspeed_package'];
+            $package->relative_humidity_package = $data['relative_humidity_package'];
+            $package->precipitation_package = $data['precipitation_package'];
             $package->total_hour_package = $data['total_hour_package'];
             $package->user_id = auth()->user()->user_id;
             $package->admin_id = null;

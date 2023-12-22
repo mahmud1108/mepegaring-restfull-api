@@ -21,6 +21,8 @@ class PackageResource extends JsonResource
             'temperature_package' => $this->temperature_package,
             'windspeed_package' => $this->windspeed_package,
             'total_hour_package' => $this->total_hour_package,
+            'relative_humidity_package' => $this->relative_humidity_package,
+            'precipitation_package' => $this->precipitation_package,
             'user_id' => $this->whenNotNull($this->user_id),
             'admin_id' => $this->whenNotNull($this->admin_id),
         ];
