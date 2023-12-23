@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Http\Request;
@@ -28,7 +29,6 @@ Route::delete('/temporary-schedule', [LandingPageController::class, 'delete_temp
 
 Route::get('/package-admin', [LandingPageController::class, 'get_package_admin']);
 
-
 Route::middleware(AdminMiddleware::class)->prefix('admin')->group(function () {
     Route::get('/', [AdminController::class, 'index']);
     Route::put('/', [AdminController::class, 'update']);
@@ -39,4 +39,5 @@ Route::middleware(AdminMiddleware::class)->prefix('admin')->group(function () {
 
 Route::middleware(UserMiddleware::class)->prefix('user')->group(function () {
     Route::apiResource('package', PackageController::class);
+    Route::apiResource('schedule', ScheduleController::class);
 });

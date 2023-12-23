@@ -2,76 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\PackageResource;
+use App\Http\Requests\ScheduleStoreRequest;
+use App\Http\Requests\ScheduleUpdateRequest;
+use App\Http\Resources\ScheduleResource;
+use App\Http\Resources\ScheduleRresource;
 use App\Http\Resources\TemporaryScheduleResource;
 use App\Models\Package;
 use App\Models\Schedule;
 use App\Models\ScheduleDetail;
 use Carbon\Carbon;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use Dotenv\Repository\RepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Nette\Utils\Random;
 
-class LandingPageController extends Controller
+class ScheduleController extends Controller
 {
-    public function forecast($latitude, $longitude, $start_date, $end_date)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
-        $path = "https://api.open-meteo.com/v1/forecast?latitude=" . $latitude . "&longitude=" . $longitude . "&hourly=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code&timezone=Asia%2FBangkok&start_date=" . $start_date . "&end_date=" . $end_date;
+        $per_page = $request->input('per_page', 10);
+        $page = $request->input('page', 1);
 
-        try {
-            $data = json_decode(file_get_contents($path), true);
-        } catch (\Throwable $th) {
-            throw new HttpResponseException(response([
-                'errors' => $th->getMessage()
-            ]));
-        }
+        $schedule = Schedule::query()->where('user_id', auth()->user()->user_id)
+            ->paginate(perPage: $per_page, page: $page);
 
-        return $data;
+        return ScheduleResource::collection($schedule);
     }
 
-    public function post_forecast(Request $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(ScheduleStoreRequest $request)
     {
-        $latitude = $request->input('latitude', '-8.3684');
-        $longitude = $request->input('longitude', '114.3055');
+        $data = $request->validated();
 
-        $start_date = $request->input('start_date', Carbon::now()->format('Y-m-d'));
-        $end_date = $request->input('end_date', Carbon::now()->format('Y-m-d'));
-
-        $data = $this->forecast($latitude, $longitude, $start_date, $end_date);
-
-        return $data;
-    }
-
-    public function get_forecast()
-    {
-        $latitude =  '-8.3684';
-        $longitude =  '114.3055';
-
-        $start_date =  Carbon::now()->format('Y-m-d');
-        $end_date =  Carbon::now()->format('Y-m-d');
-
-        $data = $this->forecast($latitude, $longitude, $start_date, $end_date);
-
-        return $data;
-    }
-
-    public function get_package_admin()
-    {
-        $package = Package::where('admin_id', 'like', "%adm_%")->get();
-
-        return PackageResource::collection($package);
-    }
-
-    public function temporary_schedule(Request $request)
-    {
-        $package = Package::where('package_id', $request->package_id)->first();
+        $package = Package::where('package_id', $data['package_id'])->first();
         $add_date =  ceil($package->total_hour_package / 8);
-        $latitude = $request->input('latitude', '-8.3684');
-        $longitude = $request->input('longitude', '114.3055');
-        $start_date = $request->input('start_date', Carbon::now()->format('Y-m-d'));
-        $end_date = $request->input('end_date', date('Y-m-d', strtotime($start_date . ' +' . $add_date . ' days')));
-        $place = $request->input('place', 'Wonosobo');
-        $schedule_name = $request->input('schedule_name', 'Schedule Name');
+        $latitude = $data['latitude'];
+        $longitude = $data['longitude'];
+        $start_date = $data['schedule_date'];
+        $end_date = date('Y-m-d', strtotime($start_date . ' +' . $add_date . ' days'));
+        $place = $data['name_place'];
+        $schedule_name = $data['schedule_name'];
 
 
         $schedule = new Schedule;
@@ -82,9 +57,11 @@ class LandingPageController extends Controller
         $schedule->latitude = $latitude;
         $schedule->longitude = $longitude;
         $schedule->package_id = $package->package_id;
+        $schedule->user_id = auth()->user()->user_id;
         $schedule->save();
 
-        $data = $this->forecast($latitude, $longitude, $start_date, $end_date);
+        $data = new LandingPageController;
+        $data = $data->forecast($latitude, $longitude, $start_date, $end_date);
 
         $start_hour = 5;
         $end_hour = 16;
@@ -156,35 +133,56 @@ class LandingPageController extends Controller
             $schedule_detail->save();
         }
         return new TemporaryScheduleResource($schedule);
-
-        return response()->json([
-            "latitude" => $latitude,
-            "longitude" => $longitude,
-            "schedule_name" => $schedule_name,
-            "place" => $place,
-            "timezone" => "Asia/Bangkok",
-            "timezone_abbreviation" => "+07",
-            "hourly_units" => [
-                "time" => "iso8601",
-                "temperature_2m" => "°C",
-                "relative_humidity_2m" => "%",
-                "precipitation" => "mm",
-                "wind_speed_10m" => "km/h"
-            ],
-            "hourly" => [
-                'hour' => $hours,
-                "date" => $dates,
-                "temperature_2m" => $temperatures,
-                "relative_humidity_2m" => $relative_humidities,
-                "precipitation" => $precipitations,
-                "wind_speed_10m" => $wind_speeds
-            ]
-        ]);
     }
 
-    public function delete_temporary_schedule()
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
-        Schedule::where('user_id', null)->delete();
+        $schedule = Schedule::where('schedule_id', $id)->first();
+
+        return new ScheduleResource($schedule);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(ScheduleUpdateRequest $request, string $id)
+    {
+        $data = $request->validated();
+
+        $schedule = Schedule::where('schedule_id', $id)->first();
+
+        if (isset($data['latitude'])) {
+            $schedule->latitude = $data['latitude'];
+        }
+        if (isset($data['longitude'])) {
+            $schedule->longitude = $data['longitude'];
+        }
+        if (isset($data['name_place'])) {
+            $schedule->name_place = $data['name_place'];
+        }
+        if (isset($data['schedule_name'])) {
+            $schedule->schedule_name = $data['schedule_name'];
+        }
+        if (isset($data['schedule_date'])) {
+            $schedule->schedule_date = $data['schedule_date'];
+        }
+        if (isset($data['package_id'])) {
+            $schedule->package_id = $data['package_id'];
+        }
+        $schedule->save();
+
+        return new ScheduleResource($schedule);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        Schedule::where('schedule_id', $id)->delete();
 
         return response()->json([
             'status' => true

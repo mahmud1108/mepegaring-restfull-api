@@ -35,7 +35,7 @@ class PackageSeeder extends Seeder
             Package::create([
                 'package_id' => $i + 10,
                 'name_package' => 'name_package' . $i + 20,
-                'weather_package' => 'weather_package' . $i + 20,
+                'weather_package' => '1,2,3',
                 'temperature_package' => '12',
                 'windspeed_package' => '12',
                 'relative_humidity_package' => '12',
@@ -50,7 +50,7 @@ class PackageSeeder extends Seeder
             Package::create([
                 'package_id' => $i + 20,
                 'name_package' => 'name_package' . $i + 20,
-                'weather_package' => 'weather_package' . $i + 20,
+                'weather_package' => '1,2,3',
                 'temperature_package' => '12',
                 'windspeed_package' => '12',
                 'relative_humidity_package' => '12',

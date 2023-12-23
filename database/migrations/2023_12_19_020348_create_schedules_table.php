@@ -15,6 +15,8 @@ return new class extends Migration
             $table->uuid('schedule_id')->primary()->unique();
             $table->string('name_place', 100);
             $table->string('schedule_name', 20);
+            $table->string('latitude', 20);
+            $table->string('longitude', 20);
             $table->date('schedule_date');
             $table->string('user_id')->nullable();
             $table->string('package_id', 20);

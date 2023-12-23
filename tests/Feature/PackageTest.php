@@ -155,7 +155,7 @@ class PackageTest extends TestCase
                 'data' => [
                     "package_id" => "10",
                     "name_package" => "name_package20",
-                    "weather_package" => "weather_package20",
+                    "weather_package" => "1,2,3",
                     "temperature_package" => "12",
                     "windspeed_package" => "12",
                     "total_hour_package" => "12",
