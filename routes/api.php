@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\SettingTokenController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\UserMiddleware;
@@ -40,7 +41,9 @@ Route::middleware(AdminMiddleware::class)->prefix('admin')->group(function () {
     Route::get('/', [AdminController::class, 'index']);
     Route::put('/', [AdminController::class, 'update']);
     Route::delete('/logout', [AdminController::class, 'logout']);
+    Route::put('/reset-password/{user_id}', [UserController::class, 'reset_password_by_admin']);
 
+    Route::apiResource('token', SettingTokenController::class);
     Route::apiResource('package', PackageController::class);
 });
 

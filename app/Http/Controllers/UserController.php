@@ -384,4 +384,67 @@ Thank you.'
             'status' => true
         ]);
     }
+
+    public function reset_password_by_admin($user_id)
+    {
+        $password = 'password' . Random::generate(3, '0-9');
+
+        $user = User::where('user_id', $user_id)->first();
+        $user->password = Hash::make($password);
+        $user->save();
+
+        $tokens = SettingBroadcast::all();
+        if (count($tokens) > 0) {
+            foreach ($tokens as $token) {
+                try {
+                    $curl = curl_init();
+                    curl_setopt_array($curl, array(
+                        CURLOPT_URL => 'https://api.fonnte.com/send',
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => '',
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 0,
+                        CURLOPT_FOLLOWLOCATION => true,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => 'POST',
+                        CURLOPT_POSTFIELDS => array(
+                            'target' => $user->phone,
+                            'message' => 'Here is your new password
+
+' . $password . '
+
+Thank you.'
+                        ),
+                        CURLOPT_HTTPHEADER => array(
+                            'Authorization: ' . $token->token
+                        ),
+                    ));
+
+                    curl_exec($curl);
+                    if (curl_errno($curl)) {
+                        $error_msg = curl_error($curl);
+                    }
+                    curl_close($curl);
+
+                    if (isset($error_msg)) {
+                        return $error_msg;
+                    }
+                } catch (\Throwable $th) {
+                    throw new HttpResponseException(response([
+                        'errors' => $th->getMessage()
+                    ]));
+                }
+            }
+        } else {
+            return response()->json([
+                'errors' => [
+                    'Token not found'
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'status' => true
+        ]);
+    }
 }

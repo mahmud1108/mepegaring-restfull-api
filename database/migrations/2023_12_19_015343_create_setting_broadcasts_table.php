@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('setting_broadcasts', function (Blueprint $table) {
             $table->uuid('setting_id')->primary()->unique();
             $table->string('token', 100);
-            $table->string('name', 10);
+            $table->string('name', 20);
             $table->string('setting_number', 20);
             $table->timestamps();
         });

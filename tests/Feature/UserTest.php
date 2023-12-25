@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Seeders\AdminSeeder;
+use Database\Seeders\FakeTokenSeeder;
 use Database\Seeders\UserOtpSeeder;
 use Database\Seeders\UserOtpSeedInvalid;
 use Database\Seeders\UserSeeder;
@@ -95,6 +97,7 @@ class UserTest extends TestCase
 
     public function testUserRegisterSuccess()
     {
+        $this->seed(FakeTokenSeeder::class);
         $result = $this->post('/api/user/register', [
             'phone' => '085640094098'
         ])->assertStatus(201)
@@ -121,7 +124,7 @@ class UserTest extends TestCase
 
     public function testSendOtpForResetPasswordSuccess()
     {
-        $this->seed(UserSeeder::class);
+        $this->seed([UserSeeder::class, FakeTokenSeeder::class]);
 
         $this->post('/api/user/forgot-password', [
             'phone' => '123123123'
@@ -151,7 +154,7 @@ class UserTest extends TestCase
 
     public function testInputOtpSuccess()
     {
-        $this->seed([UserSeeder::class, UserOtpSeeder::class]);
+        $this->seed([UserSeeder::class, UserOtpSeeder::class, FakeTokenSeeder::class]);
 
         $this->post('/api/user/otp?phone=123123123', [
             'otp' => '123123'
@@ -163,7 +166,7 @@ class UserTest extends TestCase
 
     public function testInputOtpPhoneNotFound()
     {
-        $this->seed([UserSeeder::class, UserOtpSeeder::class]);
+        $this->seed([UserSeeder::class, UserOtpSeeder::class, FakeTokenSeeder::class]);
 
         $this->post('/api/user/otp?phone=8374926738', [
             'otp' => '123123'
@@ -179,7 +182,7 @@ class UserTest extends TestCase
 
     public function testInputOtpInvalid()
     {
-        $this->seed([UserSeeder::class, UserOtpSeeder::class]);
+        $this->seed([UserSeeder::class, UserOtpSeeder::class, FakeTokenSeeder::class]);
 
         $this->post('/api/user/otp?phone=123123123', [
             'otp' => '111111'
@@ -195,7 +198,7 @@ class UserTest extends TestCase
 
     public function testInputOtpInvalidExpired()
     {
-        $this->seed([UserSeeder::class, UserOtpSeedInvalid::class]);
+        $this->seed([UserSeeder::class, UserOtpSeedInvalid::class, FakeTokenSeeder::class]);
 
         $this->post('/api/user/otp?phone=123123123', [
             'otp' => '123123'
@@ -211,7 +214,7 @@ class UserTest extends TestCase
 
     public function testUpdatePasswordSuccess()
     {
-        $this->seed([UserSeeder::class, UserOtpSeeder::class]);
+        $this->seed([UserSeeder::class, UserOtpSeeder::class, FakeTokenSeeder::class]);
 
         $old = User::where('phone', '123123123')->first();
         $this->post('/api/user/update-password?phone=123123123&otp=123123', [
@@ -228,7 +231,7 @@ class UserTest extends TestCase
 
     public function testUpdatePasswordFailedValidation()
     {
-        $this->seed([UserSeeder::class, UserOtpSeeder::class]);
+        $this->seed([UserSeeder::class, UserOtpSeeder::class, FakeTokenSeeder::class]);
 
         $this->post('/api/user/update-password?phone=123123123&otp=123123', [
             'password' => '123123',
@@ -241,5 +244,21 @@ class UserTest extends TestCase
                     ]
                 ]
             ]);
+    }
+
+    public function testResetPasswordByAdmin()
+    {
+        $this->seed([UserSeeder::class, AdminSeeder::class, FakeTokenSeeder::class]);
+
+        $user = User::query()->limit(1)->first();
+        $this->put('/api/admin/reset-password/' . $user->user_id, headers: [
+            'Authorization' => 'admin'
+        ])->assertStatus(200)
+            ->assertJson([
+                'status' => true
+            ]);
+        $new = User::query()->limit(1)->first();
+
+        self::assertNotEquals($new->password, $user->password);
     }
 }
