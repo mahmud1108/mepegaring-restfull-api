@@ -30,6 +30,9 @@ Route::delete('/temporary-schedule', [LandingPageController::class, 'delete_temp
 
 Route::post('/user/register', [UserController::class, 'store']);
 Route::get('/user/activate/{id}', [UserController::class, 'activate']);
+Route::post('/user/forgot-password', [UserController::class, 'forgot_password']);
+Route::post('/user/otp', [UserController::class, 'otp']);
+Route::post('/user/update-password', [UserController::class, 'update_password']);
 
 Route::get('/package-admin', [LandingPageController::class, 'get_package_admin']);
 

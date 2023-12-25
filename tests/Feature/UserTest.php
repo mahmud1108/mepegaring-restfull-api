@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Seeders\UserOtpSeeder;
+use Database\Seeders\UserOtpSeedInvalid;
 use Database\Seeders\UserSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
@@ -114,6 +114,130 @@ class UserTest extends TestCase
                 'errors' => [
                     'phone' => [
                         'The phone has already been taken.'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testSendOtpForResetPasswordSuccess()
+    {
+        $this->seed(UserSeeder::class);
+
+        $this->post('/api/user/forgot-password', [
+            'phone' => '123123123'
+        ])->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'phone' => '123123123'
+                ]
+            ]);
+    }
+
+    public function testSendOtpForResetPasswordFailed()
+    {
+        $this->seed(UserSeeder::class);
+
+        $this->post('/api/user/forgot-password', [
+            'phone' => '1029278303'
+        ])->assertStatus(404)
+            ->assertJson([
+                'errors' => [
+                    'message' => [
+                        'Not found'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testInputOtpSuccess()
+    {
+        $this->seed([UserSeeder::class, UserOtpSeeder::class]);
+
+        $this->post('/api/user/otp?phone=123123123', [
+            'otp' => '123123'
+        ])->assertStatus(200)
+            ->assertJson([
+                'status' => true
+            ]);
+    }
+
+    public function testInputOtpPhoneNotFound()
+    {
+        $this->seed([UserSeeder::class, UserOtpSeeder::class]);
+
+        $this->post('/api/user/otp?phone=8374926738', [
+            'otp' => '123123'
+        ])->assertStatus(404)
+            ->assertJson([
+                'errors' => [
+                    'message' => [
+                        'Phone not found'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testInputOtpInvalid()
+    {
+        $this->seed([UserSeeder::class, UserOtpSeeder::class]);
+
+        $this->post('/api/user/otp?phone=123123123', [
+            'otp' => '111111'
+        ])->assertStatus(400)
+            ->assertJson([
+                'errors' => [
+                    'message' => [
+                        'OTP invalid'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testInputOtpInvalidExpired()
+    {
+        $this->seed([UserSeeder::class, UserOtpSeedInvalid::class]);
+
+        $this->post('/api/user/otp?phone=123123123', [
+            'otp' => '123123'
+        ])->assertStatus(400)
+            ->assertJson([
+                'errors' => [
+                    'message' => [
+                        'OTP invalid'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testUpdatePasswordSuccess()
+    {
+        $this->seed([UserSeeder::class, UserOtpSeeder::class]);
+
+        $old = User::where('phone', '123123123')->first();
+        $this->post('/api/user/update-password?phone=123123123&otp=123123', [
+            'password' => '123123',
+            'password_confirmation' => '123123'
+        ])->assertStatus(200)
+            ->assertJson([
+                'status' => true
+            ]);
+        $new = User::where('phone', '123123123')->first();
+
+        self::assertNotEquals($new->password, $old->password);
+    }
+
+    public function testUpdatePasswordFailedValidation()
+    {
+        $this->seed([UserSeeder::class, UserOtpSeeder::class]);
+
+        $this->post('/api/user/update-password?phone=123123123&otp=123123', [
+            'password' => '123123',
+            'password_confirmation' => 'salah'
+        ])->assertStatus(400)
+            ->assertJson([
+                'errors' => [
+                    'password' => [
+                        'The password field confirmation does not match.'
                     ]
                 ]
             ]);

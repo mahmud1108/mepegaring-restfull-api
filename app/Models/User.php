@@ -15,4 +15,9 @@ class User extends Authenticatable
     protected $guarded = 'user_id';
 
     public $incrementing = false;
+
+    public function otp()
+    {
+        return $this->belongsTo(UserOTP::class, 'user_id', 'user_id');
+    }
 }

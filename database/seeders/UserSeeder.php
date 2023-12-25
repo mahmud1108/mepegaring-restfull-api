@@ -27,5 +27,17 @@ class UserSeeder extends Seeder
                 'token' => 'user' . $i,
             ]);
         }
+
+        User::create([
+            'user_id' => 'user_3',
+            'name' => 'username3',
+            'email' => 'user3@gmail.com',
+            'phone' => '123123123',
+            'password' => Hash::make('user'),
+            'address' => 'user',
+            'image' => 'user',
+            'user_is_active' => 'yes',
+            'token' => 'user3',
+        ]);
     }
 }

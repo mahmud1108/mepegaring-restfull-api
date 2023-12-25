@@ -99,7 +99,7 @@ class ScheduleController extends Controller
         $count_hour_package = $package->total_hour_package;
         $total_hour = 0;
         for ($i = 0; $i < count($dates); $i++) {
-            $status = '';
+            $status = null;
             // untuk menentukan statusnya yes atau no
             //  yes berarti cuaca sesuai untuk mengeringkan komoditas dan no berarti sebaliknya
 
@@ -114,7 +114,7 @@ class ScheduleController extends Controller
                             $status = 'yes';
                             $total_hour++;
                         } else {
-                            $status = '';
+                            $status = null;
                         }
                     }
                 }
@@ -132,6 +132,8 @@ class ScheduleController extends Controller
             $schedule_detail->schedule_id = $schedule->schedule_id;
             $schedule_detail->save();
         }
+
+
         return new TemporaryScheduleResource($schedule);
     }
 
