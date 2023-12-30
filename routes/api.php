@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ScheduleController;
@@ -28,6 +29,9 @@ Route::post('/forecast', [LandingPageController::class, 'post_forecast']);
 Route::get('/forecast', [LandingPageController::class, 'get_forecast']);
 Route::post('/temporary-schedule', [LandingPageController::class, 'temporary_schedule']);
 Route::delete('/temporary-schedule', [LandingPageController::class, 'delete_temporary_schedule']);
+
+Route::get('/schedule-update', [JobController::class, 'schedule_update']);
+Route::get('/send-notification', [JobController::class, 'send_notification']);
 
 Route::post('/user/register', [UserController::class, 'store']);
 Route::get('/user/activate/{id}', [UserController::class, 'activate']);

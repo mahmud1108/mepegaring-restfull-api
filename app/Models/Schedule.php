@@ -20,6 +20,11 @@ class Schedule extends Model
         return  $this->belongsTo(Package::class, 'package_id', 'package_id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+
     public function schedule_detail()
     {
         return $this->hasMany(ScheduleDetail::class, 'schedule_id', 'schedule_id');

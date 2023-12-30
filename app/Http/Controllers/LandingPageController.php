@@ -7,6 +7,7 @@ use App\Http\Resources\TemporaryScheduleResource;
 use App\Models\Package;
 use App\Models\Schedule;
 use App\Models\ScheduleDetail;
+use App\Models\ScheduleNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;

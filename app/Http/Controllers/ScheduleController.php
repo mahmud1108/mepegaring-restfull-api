@@ -10,6 +10,7 @@ use App\Http\Resources\TemporaryScheduleResource;
 use App\Models\Package;
 use App\Models\Schedule;
 use App\Models\ScheduleDetail;
+use App\Models\ScheduleNotification;
 use Carbon\Carbon;
 use Dotenv\Repository\RepositoryInterface;
 use Illuminate\Http\Request;
@@ -133,6 +134,17 @@ class ScheduleController extends Controller
             $schedule_detail->save();
         }
 
+        $schedule_details = ScheduleDetail::where('status', null)->get();
+        foreach ($schedule_details as $schedule_detail) {
+            $notification = new ScheduleNotification();
+            $notification->schedule_notification_id = 'notification_' . Random::generate();
+            $notification->notification_date = $schedule_detail->schedule_detail_date;
+            $notification->notification_hour = $schedule_detail->schedule_detail_hour;
+            $notification->timezone = 'GMT +7';
+            $notification->user_id = auth()->user()->user_id;
+            $notification->schedule_id = $schedule->schedule_id;
+            $notification->save();
+        }
 
         return new TemporaryScheduleResource($schedule);
     }

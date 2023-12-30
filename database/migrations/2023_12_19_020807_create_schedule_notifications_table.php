@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('schedule_notifications', function (Blueprint $table) {
             $table->uuid('schedule_notification_id')->primary()->unique();
             $table->date('notification_date');
-            $table->time('hotification_hour');
+            $table->string('notification_hour', 5);
             $table->string('timezone', 20);
             $table->string('user_id');
             $table->string('schedule_id');

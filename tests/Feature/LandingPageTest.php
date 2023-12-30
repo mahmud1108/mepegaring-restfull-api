@@ -62,4 +62,9 @@ class LandingPageTest extends TestCase
                 'status' => true
             ]);
     }
+
+    public function testUpdateSchedule()
+    {
+        
+    }
 }
